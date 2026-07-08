@@ -12,6 +12,8 @@ Playwright, an LLM agent layer**).
 **Demo walkthrough:** `demo/demo.gif` (Dashboard → create control → upload evidence → run agent →
 view mapped findings → OpenAPI/Swagger).
 
+![Mini-GRC demo walkthrough](demo/demo.gif)
+
 ---
 
 ## Feature → requirement map
