@@ -9,16 +9,12 @@ namespace MiniGrc.Domain.Entities;
 /// </summary>
 public sealed class RemediationTask : Entity
 {
-    /// <summary>Action the owner must take.</summary>
     public string Title { get; private set; }
 
-    /// <summary>Optional detail / acceptance criteria.</summary>
     public string? Detail { get; private set; }
 
-    /// <summary>Work priority.</summary>
     public RemediationPriority Priority { get; private set; }
 
-    /// <summary>Foreign key to the owning <see cref="Finding"/>.</summary>
     public Guid FindingId { get; private set; }
 
     private RemediationTask()
@@ -34,7 +30,6 @@ public sealed class RemediationTask : Entity
         FindingId = findingId;
     }
 
-    /// <summary>Factory validating the task attributes.</summary>
     public static RemediationTask Create(string title, string? detail, RemediationPriority priority, Guid findingId)
     {
         if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Task title is required.", nameof(title));

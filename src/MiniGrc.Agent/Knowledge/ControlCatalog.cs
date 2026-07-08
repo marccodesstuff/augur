@@ -2,23 +2,16 @@ using MiniGrc.Domain.Enums;
 
 namespace MiniGrc.Agent.Knowledge;
 
-/// <summary>
-/// Static catalog of canonical controls per framework. The agent uses this to map a finding's
-/// keywords to the most relevant control code. In production this would be loaded from the
-/// database; a static catalog keeps the mapping explainable and testable.
-/// </summary>
+/// <summary>Static catalog of canonical controls per framework. The agent maps a finding's keywords
+/// to the most relevant control code. Static (not DB-loaded) to keep the mapping explainable/testable.</summary>
 public sealed class ControlCatalog
 {
-    /// <summary>A catalog entry linking a control code to the keywords that suggest it.</summary>
     public sealed record Entry(string Code, string Title, ComplianceFramework Framework, string[] Keywords);
 
-    /// <summary>All known catalog entries.</summary>
     public IReadOnlyList<Entry> Entries { get; }
 
-    /// <summary>Builds the catalog from the supplied entries.</summary>
     public ControlCatalog(IEnumerable<Entry> entries) => Entries = entries.ToList();
 
-    /// <summary>Default SOC 2 + ISO 27001 catalog used by the agent.</summary>
     public static ControlCatalog Default() => new(new[]
     {
         new Entry("SOC2-CC6.1", "Logical Access Controls", ComplianceFramework.Soc2,
@@ -43,7 +36,6 @@ public sealed class ControlCatalog
             new[] { "threat", "intelligence", "malware", "exploit" })
     });
 
-    /// <summary>Maps a finding title/description to the best-matching control code, or null.</summary>
     public string? MapToControlCode(string text, ComplianceFramework framework)
     {
         var haystack = text.ToLowerInvariant();

@@ -5,13 +5,8 @@ using MiniGrc.Domain.Enums;
 
 namespace MiniGrc.Application.Mappings;
 
-/// <summary>
-/// Central Mapster configuration mapping domain entities to their read-model DTOs. Registered once
-/// at startup via <see cref="AddApplication"/>.
-/// </summary>
 public static class MappingConfig
 {
-    /// <summary>Registers all entity-to-DTO adapters.</summary>
     public static void Register()
     {
         TypeAdapterConfig<Control, ControlDto>.NewConfig()

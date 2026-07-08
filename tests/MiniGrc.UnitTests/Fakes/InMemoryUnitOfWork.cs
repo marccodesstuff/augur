@@ -5,26 +5,18 @@ using MiniGrc.Domain.Repositories;
 
 namespace MiniGrc.UnitTests.Fakes;
 
-/// <summary>
-/// In-memory implementation of <see cref="IUnitOfWork"/> used by unit tests. Keeps entities in
-/// simple lists so handlers can be exercised without a real database or EF Core.
-/// </summary>
 public sealed class InMemoryUnitOfWork : IUnitOfWork
 {
     private readonly List<Control> _controls = new();
     private readonly List<Finding> _findings = new();
     private readonly List<Risk> _risks = new();
 
-    /// <inheritdoc/>
     public IControlRepository Controls { get; }
 
-    /// <inheritdoc/>
     public IFindingRepository Findings { get; }
 
-    /// <inheritdoc/>
     public IRiskRepository Risks { get; }
 
-    /// <summary>Constructs the in-memory unit of work and its repositories.</summary>
     public InMemoryUnitOfWork()
     {
         Controls = new InMemoryControlRepository(_controls);
@@ -32,7 +24,6 @@ public sealed class InMemoryUnitOfWork : IUnitOfWork
         Risks = new InMemoryRiskRepository(_risks);
     }
 
-    /// <inheritdoc/>
     public Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
         // No-op: the in-memory collections are mutated directly by the repositories.

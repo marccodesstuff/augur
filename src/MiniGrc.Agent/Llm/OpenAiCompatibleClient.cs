@@ -1,34 +1,21 @@
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 
 namespace MiniGrc.Agent.Llm;
 
-/// <summary>
-/// Minimal OpenAI-compatible chat client. Talks to any endpoint exposing
-/// <c>/v1/chat/completions</c> (OpenAI, LM Studio, Ollama, etc.). Kept dependency-free so the
-/// agent layer has no hard coupling to a single vendor.
-/// </summary>
+/// <summary>Minimal OpenAI-compatible chat client for any <c>/v1/chat/completions</c> endpoint
+/// (OpenAI, LM Studio, Ollama). Dependency-free so the agent has no hard vendor coupling.</summary>
 public sealed class OpenAiCompatibleClient
 {
     private readonly HttpClient _http;
     private readonly string _model;
 
-    /// <summary>Constructs the client.</summary>
-    /// <param name="httpClient">HTTP client (base address set by DI).</param>
-    /// <param name="model">Model name to request.</param>
     public OpenAiCompatibleClient(HttpClient httpClient, string model)
     {
         _http = httpClient;
         _model = model;
     }
 
-    /// <summary>Sends a chat completion request and returns the assistant message content.</summary>
-    /// <param name="systemPrompt">System instructions.</param>
-    /// <param name="userPrompt">User content.</param>
-    /// <param name="temperature">Sampling temperature.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <exception cref="InvalidOperationException">When the endpoint is unreachable (caller falls back).</exception>
     public async Task<string> CompleteAsync(string systemPrompt, string userPrompt, double temperature = 0.2, CancellationToken ct = default)
     {
         var payload = new
@@ -59,7 +46,6 @@ public sealed class OpenAiCompatibleClient
     }
 }
 
-/// <summary>Response shapes for deserialization of the chat completion payload.</summary>
 file sealed class ChatResponse
 {
     public List<ChatChoice>? choices { get; set; }

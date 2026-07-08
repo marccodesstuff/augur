@@ -5,20 +5,14 @@ using MiniGrc.Agent.Knowledge;
 
 namespace MiniGrc.Agent.Fallback;
 
-/// <summary>
-/// Deterministic, offline-safe brain for the agent. Used when no LLM endpoint is reachable, so
-/// the app always produces a useful, inspectable result. Parses a tool JSON export or policy
-/// prose, maps findings to controls via <see cref="ControlCatalog"/>, drafts remediation tasks,
-/// and writes a plain risk summary.
-/// </summary>
+/// <summary>Offline-safe fallback brain: parses a tool JSON export or policy prose, maps findings
+/// to controls via <see cref="ControlCatalog"/>, drafts remediation, and writes a risk summary.</summary>
 public sealed class DeterministicAnalyzer
 {
     private readonly ControlCatalog _catalog;
 
-    /// <summary>Constructs the analyzer with a control catalog.</summary>
     public DeterministicAnalyzer(ControlCatalog catalog) => _catalog = catalog;
 
-    /// <summary>Analyzes raw input and returns extracted findings (no persistence).</summary>
     public List<ExtractedFinding> Analyze(string source, string format, string content, ComplianceFramework framework)
     {
         var raw = format.Equals("json", StringComparison.OrdinalIgnoreCase)
@@ -29,8 +23,7 @@ public sealed class DeterministicAnalyzer
         foreach (var item in raw)
         {
             var code = _catalog.MapToControlCode($"{item.Title} {item.Description}", framework);
-            var severity = item.Severity;
-            var priority = severity switch
+            var priority = item.Severity switch
             {
                 FindingSeverity.Critical => RemediationPriority.Urgent,
                 FindingSeverity.High => RemediationPriority.High,
@@ -46,13 +39,12 @@ public sealed class DeterministicAnalyzer
             if (code is not null)
                 remediations.Add(new($"Update evidence for {code}", $"Attach proof that {code} now covers this finding.", RemediationPriority.Medium));
 
-            findings.Add(new ExtractedFinding(item.Title, item.Description, severity, item.ExternalId, code, remediations));
+            findings.Add(new ExtractedFinding(item.Title, item.Description, item.Severity, item.ExternalId, code, remediations));
         }
 
         return findings;
     }
 
-    /// <summary>Writes a short natural-language risk summary from the extracted findings.</summary>
     public string Summarize(IReadOnlyList<ExtractedFinding> findings, ComplianceFramework framework)
     {
         if (findings.Count == 0)
@@ -93,7 +85,7 @@ public sealed class DeterministicAnalyzer
         }
         catch (JsonException)
         {
-            // If the JSON is malformed, fall back to treating the whole blob as one finding.
+            // Malformed JSON -> treat the whole blob as one finding.
             findings.Add(new RawFinding($"{source} export", content.Length > 200 ? content[..200] : content, FindingSeverity.Medium, $"{source}-raw"));
         }
 
@@ -104,7 +96,7 @@ public sealed class DeterministicAnalyzer
 
     private List<RawFinding> ParsePolicyProse(string content)
     {
-        // Split prose into sentence-ish chunks and turn each into a finding candidate.
+        // Split prose into sentence-ish chunks, each a finding candidate.
         var sentences = content.Split(['.', '\n', ';'], StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())
             .Where(s => s.Length > 12)

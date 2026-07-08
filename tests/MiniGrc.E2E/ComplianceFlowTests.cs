@@ -4,34 +4,23 @@ using Xunit;
 
 namespace MiniGrc.E2E;
 
-/// <summary>
-/// Shared Playwright fixture. Boots a Chromium browser once for the test class and navigates the
-/// running Mini-GRC front end (expected on http://localhost:5000, with the API on :5050).
-/// Selectors use the <c>data-testid</c> attributes added in Milestone 3 — they are stable and
-/// decoupled from CSS/structure, so the tests do not break on styling changes.
-/// </summary>
 public sealed class PlaywrightFixture : IAsyncLifetime
 {
-    /// <summary>Base URL of the Blazor front end.</summary>
     public const string BaseUrl = "http://localhost:5000";
 
-    /// <summary>The Playwright browser instance.</summary>
     public IBrowser Browser { get; private set; } = null!;
 
-    /// <summary>Launches Chromium (installs if missing).</summary>
     public async Task InitializeAsync()
     {
         var playwright = await Playwright.CreateAsync();
         Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
     }
 
-    /// <summary>Closes the browser.</summary>
     public async Task DisposeAsync()
     {
         if (Browser is not null) await Browser.DisposeAsync();
     }
 
-    /// <summary>Opens a fresh page and navigates to a route.</summary>
     public async Task<IPage> NewPageAsync(string route = "/")
     {
         var page = await Browser.NewPageAsync();
@@ -41,24 +30,19 @@ public sealed class PlaywrightFixture : IAsyncLifetime
     }
 }
 
-/// <summary>xUnit collection fixture wiring for <see cref="PlaywrightFixture"/>.</summary>
 [CollectionDefinition("Playwright")]
 public sealed class PlaywrightCollection : ICollectionFixture<PlaywrightFixture>;
 
-/// <summary>End-to-end flows covering the flagship scenario: create control, upload evidence, run agent, view status.</summary>
 [Collection("Playwright")]
 public sealed class ComplianceFlowTests : IClassFixture<PlaywrightFixture>, IAsyncLifetime
 {
     private readonly PlaywrightFixture _fixture;
     private IBrowserContext _context = null!;
 
-    /// <summary>Constructs the test with the shared fixture.</summary>
     public ComplianceFlowTests(PlaywrightFixture fixture) => _fixture = fixture;
 
-    /// <inheritdoc/>
     public async Task InitializeAsync() => _context = await _fixture.Browser.NewContextAsync();
 
-    /// <inheritdoc/>
     public async Task DisposeAsync()
     {
         if (_context is not null) await _context.DisposeAsync();

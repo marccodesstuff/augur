@@ -8,10 +8,9 @@ using MiniGrc.Domain.Enums;
 namespace MiniGrc.Agent;
 
 /// <summary>
-/// The compliance agent orchestrator. It attempts to use an LLM for richer finding extraction and
-/// a natural-language risk summary, but always degrades gracefully to the deterministic analyzer
-/// when the model is unreachable (offline / no API key). This is the agent's core design: the LLM
-/// is an enhancement, never a hard dependency — so the product works without one.
+/// Compliance agent orchestrator. Tries the LLM for richer extraction and a natural-language risk
+/// summary, but always degrades to the deterministic analyzer when the model is unreachable — the
+/// LLM is an enhancement, never a hard dependency, so the product works without one.
 /// </summary>
 public sealed class ComplianceAgent
 {
@@ -19,7 +18,6 @@ public sealed class ComplianceAgent
     private readonly ControlCatalog _catalog;
     private readonly DeterministicAnalyzer _fallback;
 
-    /// <summary>Constructs the agent. Pass a null client to run fully deterministically.</summary>
     public ComplianceAgent(OpenAiCompatibleClient? llm, ControlCatalog catalog)
     {
         _llm = llm;
@@ -27,7 +25,6 @@ public sealed class ComplianceAgent
         _fallback = new DeterministicAnalyzer(catalog);
     }
 
-    /// <summary>The system prompt that frames the LLM as a GRC analyst.</summary>
     public const string SystemPrompt =
         "You are a compliance analyst for a GRC (governance, risk, compliance) platform. " +
         "You receive security findings from tools or policy documents and map each to the most " +
@@ -35,13 +32,6 @@ public sealed class ComplianceAgent
         "{\"findings\":[{\"title\",\"description\",\"severity\",\"external_id\",\"mapped_control_code\"," +
         "\"remediations\":[{\"title\",\"detail\",\"priority\"}]}],\"risk_summary\":\"...\"}.";
 
-    /// <summary>
-    /// Runs the agent over an input. Tries the LLM first; on any failure falls back to the
-    /// deterministic analyzer so a result is always produced.
-    /// </summary>
-    /// <param name="request">The agent input.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>The aggregated agent result (findings + risk summary + whether the LLM was used).</returns>
     public async Task<AgentResult> RunAsync(AgentRequest request, CancellationToken ct = default)
     {
         var start = DateTime.UtcNow;
@@ -68,7 +58,7 @@ public sealed class ComplianceAgent
             }
             catch (Exception ex)
             {
-                // Failure mode: LLM unreachable or returned unusable JSON -> deterministic fallback.
+                // Failure mode: LLM unreachable or bad JSON -> deterministic fallback.
                 Console.WriteLine($"[Agent] LLM unavailable ({ex.GetType().Name}); using deterministic fallback.");
             }
         }

@@ -6,17 +6,10 @@ using MiniGrc.Agent.Llm;
 
 namespace MiniGrc.Agent;
 
-/// <summary>
-/// Composition root for the agent layer. Registers the <see cref="ComplianceAgentService"/> and,
-/// when an LLM endpoint is configured, the <see cref="OpenAiCompatibleClient"/>. When
-/// <c>Agent:LlmEndpoint</c> is empty the agent runs fully deterministically.
-/// </summary>
+/// <summary>Registers the agent layer. With <c>Agent:LlmEndpoint</c> set it wires an LLM-backed
+/// agent; empty leaves a deterministic-only (offline-safe) agent.</summary>
 public static class DependencyInjection
 {
-    /// <summary>Adds the agent services to the container.</summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">App configuration (reads Agent section).</param>
-    /// <returns>The same service collection for chaining.</returns>
     public static IServiceCollection AddAgent(this IServiceCollection services, IConfiguration configuration)
     {
         var catalog = ControlCatalog.Default();
@@ -31,17 +24,15 @@ public static class DependencyInjection
                 client.BaseAddress = new Uri(endpoint);
                 client.Timeout = TimeSpan.FromSeconds(60);
             });
-            // Resolve the LLM-backed agent via a factory so the client gets its base address.
+            // Factory so the client resolves its base address from DI.
             services.AddScoped<ComplianceAgent>(sp =>
             {
                 var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(OpenAiCompatibleClient));
-                var llm = new OpenAiCompatibleClient(http, model);
-                return new ComplianceAgent(llm, catalog);
+                return new ComplianceAgent(new OpenAiCompatibleClient(http, model), catalog);
             });
         }
         else
         {
-            // No LLM configured: deterministic-only agent (offline safe).
             services.AddScoped<ComplianceAgent>(_ => new ComplianceAgent(null, catalog));
         }
 
