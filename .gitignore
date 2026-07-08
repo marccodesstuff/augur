@@ -12,10 +12,12 @@ appsettings.*.json
 # Node / sass artifacts
 node_modules/
 
-# Playwright
-test-results/
-playwright-report/
-.playwright/
+# Demo capture scratch
+demo/node_modules/
+demo/shots/
+demo/frames/
+demo/list.txt
+demo/package-lock.json
 
 # Rider / VS Code
 .idea/

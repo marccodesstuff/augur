@@ -9,6 +9,9 @@ Playwright, an LLM agent layer**).
 > This is a portfolio / screening project. It is intentionally small but every feature maps to a
 > real Compyl requirement so it can be discussed end-to-end in an interview.
 
+**Demo walkthrough:** `demo/demo.gif` (Dashboard → create control → upload evidence → run agent →
+view mapped findings → OpenAPI/Swagger).
+
 ---
 
 ## Feature → requirement map
