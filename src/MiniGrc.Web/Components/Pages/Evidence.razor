@@ -1,10 +1,12 @@
 @page "/evidence"
 @using MiniGrc.Web.Services
+@using MiniGrc.Web.Components.Layout
 @using MiniGrc.ComponentLib.Components
 @using MiniGrc.Application.DTOs
 @inject ApiClient Api
 @rendermode InteractiveServer
 
+<CascadingValue Value="@(new PageMeta("Evidence", "Upload & track"))">
 <PageTitle>Mini-GRC · Evidence</PageTitle>
 
 <GrcSectionHeader Title="Evidence Upload" Subtitle="Attach and track compliance evidence per control" TestId="evidence-header" />
@@ -46,6 +48,8 @@ else
         <p class="grc-error" data-testid="evidence-error">@_error</p>
     }
 </GrcModal>
+
+</CascadingValue>
 
 @code {
     private IReadOnlyList<ControlDto>? _controls;
