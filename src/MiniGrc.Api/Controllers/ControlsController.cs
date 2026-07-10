@@ -80,6 +80,6 @@ public sealed class ControlsController : ControllerBase
         "soc2" => ComplianceFramework.Soc2,
         "iso27001" => ComplianceFramework.Iso27001,
         null or "" => null,
-        _ => throw new ArgumentOutOfRangeException(nameof(framework), "Must be 'Soc2' or 'Iso27001'.")
+        _ => null
     };
 }

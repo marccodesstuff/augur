@@ -29,12 +29,13 @@ public sealed class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var connectionString = builder.Configuration.GetConnectionString("MiniGrc")
-            ?? "Host=localhost;Port=5432;Database=minigrc;Username=postgres;Password=postgres";
+            ?? "Host=localhost;Port=5432;Database=minigrc;Username=postgres;Password=1234";
 
         // ---- Onion layers ----
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(connectionString);
         builder.Services.AddAgent(builder.Configuration);
+        builder.Services.AddScoped<McpToolBinder>();
 
         // ---- MVC / controllers ----
         builder.Services.AddControllers()
@@ -85,7 +86,7 @@ public sealed class Program
         app.UseCors("BlazorClient");
         app.MapControllers();
         app.MapOpenApi();
-        app.MapGet("/mcp", async context =>
+        app.MapPost("/mcp", async context =>
         {
             var binder = context.RequestServices.GetRequiredService<McpToolBinder>();
             using var doc = await JsonDocument.ParseAsync(context.Request.Body, cancellationToken: context.RequestAborted);
@@ -128,10 +129,11 @@ public sealed class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("MiniGrc")
-            ?? "Host=localhost;Port=5432;Database=minigrc;Username=postgres;Password=postgres";
+            ?? "Host=localhost;Port=5432;Database=minigrc;Username=postgres;Password=1234";
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(connectionString);
         builder.Services.AddAgent(builder.Configuration);
+        builder.Services.AddScoped<McpToolBinder>();
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
         var app = builder.Build();
