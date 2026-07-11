@@ -67,6 +67,22 @@ technology be swapped without touching domain logic.
 
 ---
 
+## Developer docs
+
+Details live under `/docs/`:
+
+- `01-architecture.md` — Onion layers, dependency flow, why each project exists
+- `02-cqrs.md` — MediatR pipeline, commands/queries, validation, logging, Mapster
+- `03-database.md` — EF Core model, migrations, indexes, connection strings
+- `04-mcp-bridge.md` — `/mcp` JSON-RPC endpoint, `McpToolBinder`, tool definitions
+- `05-agent-design.md` — `ComplianceAgent`, `DeterministicAnalyzer`, `ControlCatalog`, failure modes
+- `06-api-reference.md` — OpenAPI 3.1.1 endpoints, request/response shapes
+- `07-testing.md` — unit tests, Playwright E2E, `data-testid` strategy
+- `08-setup.md` — prerequisites, Postgres setup, running API + Web, troubleshooting
+- `09-deployment.md` — Docker, env vars, production notes
+
+---
+
 ## The CQRS flow (end to end)
 
 1. A Blazor page calls `ApiClient` → `POST /api/v1/controls`.
