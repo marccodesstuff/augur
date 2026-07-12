@@ -69,4 +69,3 @@ public sealed record AgentFinding(
 
 /// <summary>Lightweight shape of an agent remediation suggestion.</summary>
 public sealed record AgentRemediation(string Title, string? Detail, int Priority);
-

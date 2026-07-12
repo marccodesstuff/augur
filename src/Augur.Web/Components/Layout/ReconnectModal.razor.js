@@ -61,4 +61,3 @@ async function retryWhenDocumentBecomesVisible() {
         await retry();
     }
 }
-

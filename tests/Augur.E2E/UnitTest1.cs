@@ -1,4 +1,4 @@
-namespace Augur.E2E;
+﻿namespace Augur.E2E;
 
 public class UnitTest1
 {
@@ -8,4 +8,3 @@ public class UnitTest1
 
     }
 }
-

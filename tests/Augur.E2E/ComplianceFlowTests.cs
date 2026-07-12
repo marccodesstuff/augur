@@ -110,4 +110,3 @@ public sealed class ComplianceFlowTests : IClassFixture<PlaywrightFixture>, IAsy
         Assert.False(string.IsNullOrWhiteSpace(summary));
     }
 }
-

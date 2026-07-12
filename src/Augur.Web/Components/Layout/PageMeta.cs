@@ -8,4 +8,3 @@ public sealed record PageMeta(string Title, string Crumb)
     /// <summary>Default metadata used before a page overrides it.</summary>
     public static readonly PageMeta Default = new("Mini-GRC", "Compliance dashboard");
 }
-

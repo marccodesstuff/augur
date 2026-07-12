@@ -18,14 +18,7 @@ public sealed class Program
 
         // Typed client that talks to the Mini-GRC API (runs on :5050 in dev).
         var apiBase = builder.Configuration["Api:BaseUrl"] ?? "http://localhost:5050";
-        var apiKey = builder.Configuration["Api:ApiKey"];
-        builder.Services.AddScoped<ApiClient>(_ =>
-        {
-            var http = new HttpClient { BaseAddress = new Uri(apiBase) };
-            if (!string.IsNullOrEmpty(apiKey))
-                http.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
-            return new ApiClient(http);
-        });
+        builder.Services.AddScoped<ApiClient>(_ => new ApiClient(new HttpClient { BaseAddress = new Uri(apiBase) }));
 
         var app = builder.Build();
 
@@ -41,4 +34,3 @@ public sealed class Program
         app.Run();
     }
 }
-
