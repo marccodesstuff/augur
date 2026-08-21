@@ -40,10 +40,10 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     await shot(page, '04-control-created');
 
   // 4. Evidence page (show existing evidence UI)
-  await page.goto(`${BASE}/evidence`);
-  await page.waitForLoadState('networkidle');
-  await sleep(500);
-  await shot(page, '05-evidence-page');
+    await page.goto(`${BASE}/evidence`);
+    // Wait for the controls card to be visible (stable data-testid) instead of networkidle + sleep
+    await page.waitForSelector("[data-testid='evidence-controls']");
+    await shot(page, '05-evidence-page');
 
   // 5. Swagger / OpenAPI 3.1.1
   await page.goto(`${API}/swagger`);
