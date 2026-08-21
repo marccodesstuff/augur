@@ -21,10 +21,10 @@
           links in App.razor, so the GrcBase styles actually apply across the app.
   -->
   <Target Name="CompileScssToRazorCss" BeforeTargets="BeforeCompile;AssignRazorComponentOutputs">
-    <Exec Command="npx --yes sass --no-source-map --load-path=$(MSBuildProjectDirectory) $(MSBuildProjectDirectory):$(MSBuildProjectDirectory)"
-          ContinueOnError="true" />
-    <Exec Command="npx --yes sass --no-source-map --load-path=$(MSBuildProjectDirectory) Components/Augur.ComponentLib.bundle.scss:$(MSBuildProjectDirectory)/wwwroot/Augur.ComponentLib.css"
-          ContinueOnError="true" />
-  </Target>
+      <Exec Command="npx --yes sass --no-source-map --load-path=$(MSBuildProjectDirectory) $(MSBuildProjectDirectory):$(MSBuildProjectDirectory)"
+            ContinueOnError="true" />
+      <Exec Command="npx --yes sass --no-source-map --load-path=$(MSBuildProjectDirectory) Components/MiniGrc.ComponentLib.bundle.scss:$(MSBuildProjectDirectory)/wwwroot/Augur.ComponentLib.css"
+            ContinueOnError="true" />
+    </Target>
 
 </Project>
