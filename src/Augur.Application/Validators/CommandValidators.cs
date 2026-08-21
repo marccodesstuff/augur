@@ -63,3 +63,40 @@ public sealed class CreateRiskCommandValidator : AbstractValidator<CreateRiskCom
         RuleFor(x => x.Impact).InclusiveBetween(1, 5);
     }
 }
+
+/// <summary>Validates <see cref="CreateControlMappingCommand"/>.</summary>
+public sealed class CreateControlMappingCommandValidator : AbstractValidator<CreateControlMappingCommand>
+{
+    /// <summary>Configures the rules.</summary>
+    public CreateControlMappingCommandValidator()
+    {
+        RuleFor(x => x.SourceControlId).NotEmpty();
+        RuleFor(x => x.SourceControlCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.TargetControlCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.TargetControlTitle).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.ConfidenceScore).InclusiveBetween(0, 100);
+        RuleFor(x => x.Rationale).NotEmpty().MaximumLength(1000);
+    }
+}
+
+/// <summary>Validates <see cref="UpdateControlMappingCommand"/>.</summary>
+public sealed class UpdateControlMappingCommandValidator : AbstractValidator<UpdateControlMappingCommand>
+{
+    /// <summary>Configures the rules.</summary>
+    public UpdateControlMappingCommandValidator()
+    {
+        RuleFor(x => x.MappingId).NotEmpty();
+        RuleFor(x => x.ConfidenceScore).InclusiveBetween(0, 100);
+        RuleFor(x => x.Rationale).NotEmpty().MaximumLength(1000);
+    }
+}
+
+/// <summary>Validates <see cref="DeleteControlMappingCommand"/>.</summary>
+public sealed class DeleteControlMappingCommandValidator : AbstractValidator<DeleteControlMappingCommand>
+{
+    /// <summary>Configures the rules.</summary>
+    public DeleteControlMappingCommandValidator()
+    {
+        RuleFor(x => x.MappingId).NotEmpty();
+    }
+}
