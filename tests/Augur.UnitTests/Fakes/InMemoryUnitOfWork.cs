@@ -8,10 +8,13 @@ namespace Augur.UnitTests.Fakes;
 public sealed class InMemoryUnitOfWork : IUnitOfWork
 {
     private readonly List<Control> _controls = new();
+    private readonly List<ControlMapping> _controlMappings = new();
     private readonly List<Finding> _findings = new();
     private readonly List<Risk> _risks = new();
 
     public IControlRepository Controls { get; }
+
+    public IControlMappingRepository ControlMappings { get; }
 
     public IFindingRepository Findings { get; }
 
@@ -20,6 +23,7 @@ public sealed class InMemoryUnitOfWork : IUnitOfWork
     public InMemoryUnitOfWork()
     {
         Controls = new InMemoryControlRepository(_controls);
+        ControlMappings = new InMemoryControlMappingRepository(_controlMappings);
         Findings = new InMemoryFindingRepository(_findings);
         Risks = new InMemoryRiskRepository(_risks);
     }
@@ -63,6 +67,43 @@ public sealed class InMemoryUnitOfWork : IUnitOfWork
         public Task DeleteAsync(Control control, CancellationToken ct = default)
         {
             _store.RemoveAll(c => c.Id == control.Id);
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class InMemoryControlMappingRepository : IControlMappingRepository
+    {
+        private readonly List<ControlMapping> _store;
+        public InMemoryControlMappingRepository(List<ControlMapping> store) => _store = store;
+
+        public Task<ControlMapping?> GetByIdAsync(Guid id, CancellationToken ct = default)
+            => Task.FromResult(_store.FirstOrDefault(m => m.Id == id));
+
+        public Task<IReadOnlyList<ControlMapping>> GetBySourceControlAsync(Guid sourceControlId, CancellationToken ct = default)
+            => Task.FromResult<IReadOnlyList<ControlMapping>>(_store.Where(m => m.SourceControlId == sourceControlId).OrderBy(m => m.TargetFramework).ThenBy(m => m.TargetControlCode).ToList());
+
+        public Task<IReadOnlyList<ControlMapping>> GetBySourceControlAndTargetFrameworkAsync(Guid sourceControlId, ComplianceFramework targetFramework, CancellationToken ct = default)
+            => Task.FromResult<IReadOnlyList<ControlMapping>>(_store.Where(m => m.SourceControlId == sourceControlId && m.TargetFramework == targetFramework).OrderBy(m => m.TargetControlCode).ToList());
+
+        public Task<IReadOnlyList<ControlMapping>> GetAllAsync(CancellationToken ct = default)
+            => Task.FromResult<IReadOnlyList<ControlMapping>>(_store.OrderBy(m => m.SourceFramework).ThenBy(m => m.SourceControlCode).ThenBy(m => m.TargetFramework).ToList());
+
+        public Task AddAsync(ControlMapping mapping, CancellationToken ct = default)
+        {
+            _store.Add(mapping);
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateAsync(ControlMapping mapping, CancellationToken ct = default)
+        {
+            var idx = _store.FindIndex(m => m.Id == mapping.Id);
+            if (idx >= 0) _store[idx] = mapping;
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(ControlMapping mapping, CancellationToken ct = default)
+        {
+            _store.RemoveAll(m => m.Id == mapping.Id);
             return Task.CompletedTask;
         }
     }

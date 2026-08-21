@@ -27,5 +27,10 @@ public static class MappingConfig
 
         TypeAdapterConfig<Risk, RiskDto>.NewConfig()
             .Map(dest => dest.Severity, src => src.Severity.ToString());
+
+        TypeAdapterConfig<ControlMapping, ControlMappingDto>.NewConfig()
+            .Map(dest => dest.SourceFramework, src => src.SourceFramework.ToString())
+            .Map(dest => dest.TargetFramework, src => src.TargetFramework.ToString())
+            .Map(dest => dest.CreatedAtUtc, src => src.CreatedAtUtc);
     }
 }
