@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Augur.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AugurDbContext))]
-    [Migration("20260821125333_AddControlMapping")]
+    [Migration("20260821133637_AddControlMapping")]
     partial class AddControlMapping
     {
         /// <inheritdoc />
