@@ -6,6 +6,8 @@ public interface IUnitOfWork
 {
     IControlRepository Controls { get; }
 
+    IControlMappingRepository ControlMappings { get; }
+
     IFindingRepository Findings { get; }
 
     IRiskRepository Risks { get; }
