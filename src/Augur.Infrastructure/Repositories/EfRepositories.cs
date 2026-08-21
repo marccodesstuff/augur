@@ -44,6 +44,56 @@ public sealed class ControlRepository : IControlRepository
     }
 }
 
+public sealed class ControlMappingRepository : IControlMappingRepository
+{
+    private readonly AugurDbContext _db;
+
+    public ControlMappingRepository(AugurDbContext db) => _db = db;
+
+    public Task<ControlMapping?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        => _db.ControlMappings.FirstOrDefaultAsync(m => m.Id == id, ct);
+
+    public async Task<IReadOnlyList<ControlMapping>> GetBySourceControlAsync(Guid sourceControlId, CancellationToken ct = default)
+        => await _db.ControlMappings
+            .Where(m => m.SourceControlId == sourceControlId)
+            .OrderBy(m => m.TargetFramework)
+            .ThenBy(m => m.TargetControlCode)
+            .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<ControlMapping>> GetBySourceControlAndTargetFrameworkAsync(
+        Guid sourceControlId,
+        ComplianceFramework targetFramework,
+        CancellationToken ct = default)
+        => await _db.ControlMappings
+            .Where(m => m.SourceControlId == sourceControlId && m.TargetFramework == targetFramework)
+            .OrderBy(m => m.TargetControlCode)
+            .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<ControlMapping>> GetAllAsync(CancellationToken ct = default)
+        => await _db.ControlMappings
+            .OrderBy(m => m.SourceFramework)
+            .ThenBy(m => m.SourceControlCode)
+            .ThenBy(m => m.TargetFramework)
+            .ToListAsync(ct);
+
+    public async Task AddAsync(ControlMapping mapping, CancellationToken ct = default)
+    {
+        await _db.ControlMappings.AddAsync(mapping, ct);
+    }
+
+    public Task UpdateAsync(ControlMapping mapping, CancellationToken ct = default)
+    {
+        _db.ControlMappings.Update(mapping);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(ControlMapping mapping, CancellationToken ct = default)
+    {
+        _db.ControlMappings.Remove(mapping);
+        return Task.CompletedTask;
+    }
+}
+
 public sealed class FindingRepository : IFindingRepository
 {
     private readonly AugurDbContext _db;
@@ -106,11 +156,14 @@ public sealed class UnitOfWork : IUnitOfWork
     {
         _db = db;
         Controls = new ControlRepository(db);
+        ControlMappings = new ControlMappingRepository(db);
         Findings = new FindingRepository(db);
         Risks = new RiskRepository(db);
     }
 
     public IControlRepository Controls { get; }
+
+    public IControlMappingRepository ControlMappings { get; }
 
     public IFindingRepository Findings { get; }
 
