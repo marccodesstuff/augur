@@ -33,6 +33,45 @@ public sealed class GetControlByIdHandler : IRequestHandler<GetControlByIdQuery,
     }
 }
 
+public sealed class GetControlMappingsHandler : IRequestHandler<GetControlMappingsQuery, IReadOnlyList<ControlMappingDto>>
+{
+    private readonly IUnitOfWork _uow;
+
+    public GetControlMappingsHandler(IUnitOfWork uow) => _uow = uow;
+
+    public async Task<IReadOnlyList<ControlMappingDto>> Handle(GetControlMappingsQuery request, CancellationToken cancellationToken)
+    {
+        var mappings = await _uow.ControlMappings.GetBySourceControlAsync(request.SourceControlId, cancellationToken);
+        return mappings.Adapt<IReadOnlyList<ControlMappingDto>>();
+    }
+}
+
+public sealed class GetControlMappingsByTargetFrameworkHandler : IRequestHandler<GetControlMappingsByTargetFrameworkQuery, IReadOnlyList<ControlMappingDto>>
+{
+    private readonly IUnitOfWork _uow;
+
+    public GetControlMappingsByTargetFrameworkHandler(IUnitOfWork uow) => _uow = uow;
+
+    public async Task<IReadOnlyList<ControlMappingDto>> Handle(GetControlMappingsByTargetFrameworkQuery request, CancellationToken cancellationToken)
+    {
+        var mappings = await _uow.ControlMappings.GetBySourceControlAndTargetFrameworkAsync(request.SourceControlId, request.TargetFramework, cancellationToken);
+        return mappings.Adapt<IReadOnlyList<ControlMappingDto>>();
+    }
+}
+
+public sealed class GetAllControlMappingsHandler : IRequestHandler<GetAllControlMappingsQuery, IReadOnlyList<ControlMappingDto>>
+{
+    private readonly IUnitOfWork _uow;
+
+    public GetAllControlMappingsHandler(IUnitOfWork uow) => _uow = uow;
+
+    public async Task<IReadOnlyList<ControlMappingDto>> Handle(GetAllControlMappingsQuery request, CancellationToken cancellationToken)
+    {
+        var mappings = await _uow.ControlMappings.GetAllAsync(cancellationToken);
+        return mappings.Adapt<IReadOnlyList<ControlMappingDto>>();
+    }
+}
+
 public sealed class GetComplianceStatusHandler : IRequestHandler<GetComplianceStatusQuery, ComplianceStatusDto>
 {
     private readonly IUnitOfWork _uow;
