@@ -27,18 +27,17 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   await shot(page, '02-controls');
 
   // 3. Create a control
-  const code = 'SOC2-E2E-001';
-  await page.fill("[data-testid='input-code']", code);
-  await page.fill("[data-testid='input-title']", 'E2E Demonstration Control');
-  await page.fill("[data-testid='input-owner']", 'QA');
-  await page.fill("[data-testid='input-description']", 'Created during demo recording');
-  await sleep(200);
-  await shot(page, '03-create-form');
-  await page.click("[data-testid='btn-create-control']");
-  // Wait for server-side re-render (InteractiveServer mode)
-  await page.waitForLoadState('networkidle');
-  await sleep(3000);
-  await shot(page, '04-control-created');
+    const code = 'SOC2-E2E-001';
+    await page.fill("[data-testid='input-code']", code);
+    await page.fill("[data-testid='input-title']", 'E2E Demonstration Control');
+    await page.fill("[data-testid='input-owner']", 'QA');
+    await page.fill("[data-testid='input-description']", 'Created during demo recording');
+    await sleep(200);
+    await shot(page, '03-create-form');
+    await page.click("[data-testid='btn-create-control']");
+    // Wait for the new control row to appear (deterministic, no fixed sleep)
+    await page.waitForSelector(`[data-testid='control-row-${code}']`, { timeout: 10000 });
+    await shot(page, '04-control-created');
 
   // 4. Evidence page (show existing evidence UI)
   await page.goto(`${BASE}/evidence`);
