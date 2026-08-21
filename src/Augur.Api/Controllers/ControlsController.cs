@@ -102,59 +102,59 @@ public sealed class ControlsController : ControllerBase
     }
 
     [HttpPost("{sourceControlId:guid}/mappings")]
-            [ProducesResponseType(typeof(ControlMappingDto), StatusCodes.Status201Created)]
-            [ProducesResponseType(StatusCodes.Status400BadRequest)]
-            [ProducesResponseType(StatusCodes.Status404NotFound)]
-            public async Task<ActionResult<ControlMappingDto>> CreateMapping(Guid sourceControlId, [FromBody] CreateControlMappingRequest request)
-            {
-                if (sourceControlId != request.SourceControlId)
-                    return BadRequest("SourceControlId in URL must match request body.");
+    [ProducesResponseType(typeof(ControlMappingDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ControlMappingDto>> CreateMapping(Guid sourceControlId, [FromBody] CreateControlMappingRequest request)
+    {
+        if (sourceControlId != request.SourceControlId)
+            return BadRequest("SourceControlId in URL must match request body.");
 
-                var sourceControl = await _mediator.Send(new GetControlByIdQuery(sourceControlId));
-                if (sourceControl is null) return NotFound($"Source control {sourceControlId} not found.");
+        var sourceControl = await _mediator.Send(new GetControlByIdQuery(sourceControlId));
+        if (sourceControl is null) return NotFound($"Source control {sourceControlId} not found.");
 
-                if (!Enum.TryParse<ComplianceFramework>(sourceControl.Framework, ignoreCase: true, out var sourceControlFramework) || request.SourceFramework != sourceControlFramework)
-                    return BadRequest("SourceFramework in request must match the source control's framework.");
+        if (!Enum.TryParse<ComplianceFramework>(sourceControl.Framework, ignoreCase: true, out var sourceControlFramework) || request.SourceFramework != sourceControlFramework)
+            return BadRequest("SourceFramework in request must match the source control's framework.");
 
-                var command = new CreateControlMappingCommand(
-                    request.SourceControlId,
-                    request.SourceFramework,
-                    request.SourceControlCode,
-                    request.TargetFramework,
-                    request.TargetControlCode,
-                    request.TargetControlTitle,
-                    request.ConfidenceScore,
-                    request.Rationale);
+        var command = new CreateControlMappingCommand(
+            request.SourceControlId,
+            request.SourceFramework,
+            request.SourceControlCode,
+            request.TargetFramework,
+            request.TargetControlCode,
+            request.TargetControlTitle,
+            request.ConfidenceScore,
+            request.Rationale);
 
-                var result = await _mediator.Send(command);
-                return CreatedAtAction(nameof(GetMappings), new { id = sourceControlId }, result);
-            }
-
-        [HttpPut("mappings/{mappingId:guid}")]
-        [ProducesResponseType(typeof(ControlMappingDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ControlMappingDto>> UpdateMapping(Guid mappingId, [FromBody] UpdateControlMappingRequest request)
-        {
-            var command = new UpdateControlMappingCommand(mappingId, request.ConfidenceScore, request.Rationale);
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-
-        [HttpDelete("mappings/{mappingId:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteMapping(Guid mappingId)
-        {
-            var command = new DeleteControlMappingCommand(mappingId);
-            await _mediator.Send(command);
-            return NoContent();
-        }
-
-        private static ComplianceFramework? ParseFramework(string? framework) => framework?.Trim().ToLowerInvariant() switch
-        {
-            "soc2" => ComplianceFramework.Soc2,
-            "iso27001" => ComplianceFramework.Iso27001,
-            null or "" => null,
-            _ => throw new ArgumentOutOfRangeException(nameof(framework), "Must be 'Soc2' or 'Iso27001'.")
-        };
+        var result = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetMappings), new { id = sourceControlId }, result);
     }
+
+    [HttpPut("mappings/{mappingId:guid}")]
+    [ProducesResponseType(typeof(ControlMappingDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ControlMappingDto>> UpdateMapping(Guid mappingId, [FromBody] UpdateControlMappingRequest request)
+    {
+        var command = new UpdateControlMappingCommand(mappingId, request.ConfidenceScore, request.Rationale);
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpDelete("mappings/{mappingId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteMapping(Guid mappingId)
+    {
+        var command = new DeleteControlMappingCommand(mappingId);
+        await _mediator.Send(command);
+        return NoContent();
+    }
+
+    private static ComplianceFramework? ParseFramework(string? framework) => framework?.Trim().ToLowerInvariant() switch
+    {
+        "soc2" => ComplianceFramework.Soc2,
+        "iso27001" => ComplianceFramework.Iso27001,
+        null or "" => null,
+        _ => throw new ArgumentOutOfRangeException(nameof(framework), "Must be 'Soc2' or 'Iso27001'.")
+    };
+}

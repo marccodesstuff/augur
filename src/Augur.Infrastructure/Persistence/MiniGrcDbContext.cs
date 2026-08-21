@@ -39,26 +39,26 @@ public sealed class AugurDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Control aggregate
-                modelBuilder.Entity<Control>(builder =>
-                {
-                    builder.HasKey(c => c.Id);
-                    builder.Property(c => c.Code).IsRequired().HasMaxLength(50);
-                    builder.Property(c => c.Title).IsRequired().HasMaxLength(200);
-                    builder.Property(c => c.Description).HasMaxLength(2000);
-                    builder.Property(c => c.Owner).IsRequired().HasMaxLength(200);
-                    builder.Property(c => c.Framework)
-                           .HasConversion<int>();
-                    builder.Property(c => c.Status)
-                           .HasConversion<int>();
-                    // builder.Property(c => c.UpdatedAtUtc)
-                    //        .IsConcurrencyToken();
-                    builder.HasMany(c => c.Evidence)
-                           .WithOne()
-                           .HasForeignKey(e => e.ControlId)
-                           .OnDelete(DeleteBehavior.Cascade);
-                    builder.Navigation(c => c.Evidence).UsePropertyAccessMode(PropertyAccessMode.Field);
-                    builder.HasIndex(c => c.Code).IsUnique();
-                });
+        modelBuilder.Entity<Control>(builder =>
+        {
+            builder.HasKey(c => c.Id);
+            builder.Property(c => c.Code).IsRequired().HasMaxLength(50);
+            builder.Property(c => c.Title).IsRequired().HasMaxLength(200);
+            builder.Property(c => c.Description).HasMaxLength(2000);
+            builder.Property(c => c.Owner).IsRequired().HasMaxLength(200);
+            builder.Property(c => c.Framework)
+                   .HasConversion<int>();
+            builder.Property(c => c.Status)
+                   .HasConversion<int>();
+            // builder.Property(c => c.UpdatedAtUtc)
+            //        .IsConcurrencyToken();
+            builder.HasMany(c => c.Evidence)
+                   .WithOne()
+                   .HasForeignKey(e => e.ControlId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Navigation(c => c.Evidence).UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.HasIndex(c => c.Code).IsUnique();
+        });
 
         // ControlMapping entity
         modelBuilder.Entity<ControlMapping>(builder =>
@@ -77,15 +77,15 @@ public sealed class AugurDbContext : DbContext
         });
 
         // Evidence child entity
-                modelBuilder.Entity<Evidence>(builder =>
-                {
-                    builder.HasKey(e => e.Id);
-                    builder.Property(e => e.FileName).IsRequired().HasMaxLength(500);
-                    builder.Property(e => e.ContentType).HasMaxLength(200);
-                    builder.Property(e => e.UploadedBy).IsRequired().HasMaxLength(200);
-                    builder.Property(e => e.Status).HasConversion<int>();
-                    builder.Property(e => e.ControlId).IsRequired();
-                });
+        modelBuilder.Entity<Evidence>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.FileName).IsRequired().HasMaxLength(500);
+            builder.Property(e => e.ContentType).HasMaxLength(200);
+            builder.Property(e => e.UploadedBy).IsRequired().HasMaxLength(200);
+            builder.Property(e => e.Status).HasConversion<int>();
+            builder.Property(e => e.ControlId).IsRequired();
+        });
 
         // Finding aggregate
         modelBuilder.Entity<Finding>(builder =>
