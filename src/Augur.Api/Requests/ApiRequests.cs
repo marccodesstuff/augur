@@ -28,3 +28,17 @@ public sealed record RunAgentRequest(
     string Format,
     string Content,
     string Framework);
+
+/// <summary>Payload for creating a control mapping.</summary>
+public sealed record CreateControlMappingRequest(
+    Guid SourceControlId,
+    ComplianceFramework SourceFramework,
+    string SourceControlCode,
+    ComplianceFramework TargetFramework,
+    string TargetControlCode,
+    string TargetControlTitle,
+    int ConfidenceScore,
+    string Rationale);
+
+/// <summary>Payload for updating a control mapping confidence/rationale.</summary>
+public sealed record UpdateControlMappingRequest(int ConfidenceScore, string Rationale);
